@@ -27,7 +27,6 @@ export type CreateThreadParams = {
 
 export type addCommentToThreadParams = {
   threadId: string;
-  commentText: string;
   userId: string;
 };
 

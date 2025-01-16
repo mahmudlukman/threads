@@ -1,25 +1,15 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
-export interface IThread extends Document {
+interface IThread extends Document {
   text: string;
-  author: {
-    type: Schema.Types.ObjectId;
-    ref: "User";
-    required: true;
-  };
+  author: mongoose.Types.ObjectId;
   image?: {
     public_id: string;
     url: string;
   };
-  community: {
-    type: Schema.Types.ObjectId;
-    ref: "Community";
-  };
-  parentId: string;
-  children: {
-    type: Schema.Types.ObjectId;
-    ref: "Thread";
-  };
+  community?: mongoose.Types.ObjectId;
+  parentId?: string;
+  children: mongoose.Types.ObjectId[];
 }
 
 const ThreadSchema: Schema<IThread> = new Schema(
@@ -48,10 +38,10 @@ const ThreadSchema: Schema<IThread> = new Schema(
     parentId: {
       type: String,
     },
-    children: {
+    children: [{
       type: Schema.Types.ObjectId,
-      ref: "Thread",
-    },
+      ref: "Thread"
+    }]
   },
   { timestamps: true }
 );

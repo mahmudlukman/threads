@@ -1,11 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { catchAsyncError } from "../middleware/catchAsyncError";
 import ErrorHandler from "../utils/errorHandler";
-import { CreateThreadParams, GetAllThreadsParams } from "../@types";
+import {
+  addCommentToThreadParams,
+  CreateThreadParams,
+  GetAllThreadsParams,
+} from "../@types";
 import Thread from "../models/thread.model";
 import User from "../models/user.model";
 import cloudinary from "cloudinary";
 import Community from "../models/community.model";
+import mongoose from "mongoose";
 
 const populateThread = (query: any) => {
   return query
@@ -83,7 +88,7 @@ export const createThread = catchAsyncError(
   }
 );
 
-// GET ALL EVENTS
+// GET ALL THREADS
 export const getThreads = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -105,6 +110,49 @@ export const getThreads = catchAsyncError(
         success: true,
         threads,
         totalPages: Math.ceil(eventsCount / limit),
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// COMMENT ON THREAD
+export const addCommentToThread = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { commentText } = req.body;
+      const { threadId, userId } =
+        req.query as unknown as addCommentToThreadParams;
+
+      // Find the original thread by its ID
+      const originalThread = await Thread.findById(threadId);
+
+      if (!originalThread) {
+        throw new Error("Thread not found");
+      }
+
+      // Create the new comment thread
+      const commentThread = new Thread({
+        text: commentText,
+        author: userId,
+        parentId: threadId, // Set the parentId to the original thread's ID
+      });
+
+      // Save the comment thread to the database
+      const comment = await commentThread.save();
+
+      // Add the comment thread's ID to the original thread's children array
+      originalThread.children.push(
+        comment._id as mongoose.Types.ObjectId
+      );
+
+      // Save the updated original thread to the database
+      await originalThread.save();
+
+      res.status(200).json({
+        success: true,
+        comment,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
