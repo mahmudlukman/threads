@@ -4,12 +4,12 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { Request, Response } from "express";
 import { ErrorMiddleware } from "./middleware/error";
-import dotenv from "dotenv";
-// import authRouter from "./routes/auth.route";
+import authRouter from "./routes/auth.route";
 // import userRouter from "./routes/user.route";
 // import categoryRouter from "./routes/category.route";
 // import eventRouter from "./routes/event.route";
 // import orderRouter from "./routes/order.route";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -33,14 +33,14 @@ app.use(
 );
 
 //routes
-// app.use(
-//   "/api/v1",
-//   authRouter,
+app.use(
+  "/api/v1",
+  authRouter,
 //   userRouter,
 //   categoryRouter,
 //   eventRouter,
 //   orderRouter
-// );
+);
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({

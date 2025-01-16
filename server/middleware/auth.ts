@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsyncError } from "./catchAsyncError";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import ErrorHandler from "../utils/errorHandler";
-import User, { IUser } from "../models/user.model";
+import User from "../models/user.model";
 
 // authenticated user
 export const isAuthenticated = catchAsyncError(

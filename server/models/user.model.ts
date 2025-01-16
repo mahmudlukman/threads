@@ -11,11 +11,11 @@ export interface IUser extends Document {
   username?: string;
   email: string;
   password: string;
-  avatar: {
+  avatar?: {
     public_id: string;
     url: string;
   };
-  bio: string;
+  bio?: string;
   onboarded: Boolean;
   threads: [{ type: mongoose.Schema.Types.ObjectId; ref: "Thread" }];
   communities: [{ type: mongoose.Schema.Types.ObjectId; ref: "Community" }];
@@ -32,7 +32,6 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     },
     username: {
       type: String,
-      required: [true, "Please enter your username"],
       trim: true,
       unique: true,
     },
@@ -51,16 +50,13 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     avatar: {
       public_id: {
         type: String,
-        required: true,
       },
       url: {
         type: String,
-        required: true,
       },
     },
     bio: {
       type: String,
-      required: [true, "Please enter your bio"],
     },
     onboarded: {
       type: Boolean,
