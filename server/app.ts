@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { Request, Response } from "express";
 import { ErrorMiddleware } from "./middleware/error";
 import authRouter from "./routes/auth.route";
-// import userRouter from "./routes/user.route";
+import threadRouter from "./routes/thread.route";
 // import categoryRouter from "./routes/category.route";
 // import eventRouter from "./routes/event.route";
 // import orderRouter from "./routes/order.route";
@@ -25,9 +25,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    origin: ["http://localhost:3000"],
     credentials: true,
   })
 );
@@ -36,10 +34,10 @@ app.use(
 app.use(
   "/api/v1",
   authRouter,
-//   userRouter,
-//   categoryRouter,
-//   eventRouter,
-//   orderRouter
+  threadRouter
+  //   categoryRouter,
+  //   eventRouter,
+  //   orderRouter
 );
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
