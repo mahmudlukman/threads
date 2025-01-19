@@ -9,9 +9,17 @@ export type CreateUserParams = {
 };
 
 export type UpdateUserParams = {
-  name: string;
   username: string;
+  name: string;
+  bio: string;
   avatar?: string;
+};
+
+export type GetUsersParams = {
+  searchString?: string;
+  pageNumber?: number;
+  pageSize?: number;
+  sortBy?: SortOrder;
 };
 
 // ====== THREAD PARAMS
@@ -46,4 +54,41 @@ export type GetAllThreadsByIdParams = {
 
 export type GetAllChildThreadsParams = {
   threadId: string;
+};
+
+// ====== COMMUNITY PARAMS
+export type CreateCommunityParams = {
+  id: string;
+  name: string;
+  username: string;
+  image: string;
+  bio: string;
+  createdById: string;
+};
+
+export type GetCommunityParams = {
+  query: string;
+  limit: number;
+  page: number;
+};
+
+export type AddMemberToCommunityParams = {
+  communityId: string;
+  memberId: string;
+};
+
+export type RemoveMemberFromCommunityParams = {
+  communityId: string;
+  memberId: string;
+};
+
+export type UpdateCommunityInfoParams = {
+  communityId: string;
+  name: string;
+  username: string;
+  image: string;
+};
+
+export type DeleteCommunityParams = {
+  communityId: string;
 };

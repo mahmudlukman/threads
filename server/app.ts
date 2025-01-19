@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 import { ErrorMiddleware } from "./middleware/error";
 import authRouter from "./routes/auth.route";
 import threadRouter from "./routes/thread.route";
-// import categoryRouter from "./routes/category.route";
+import userRouter from "./routes/user.route";
 // import eventRouter from "./routes/event.route";
 // import orderRouter from "./routes/order.route";
 import dotenv from "dotenv";
@@ -34,8 +34,8 @@ app.use(
 app.use(
   "/api/v1",
   authRouter,
-  threadRouter
-  //   categoryRouter,
+  threadRouter,
+  userRouter
   //   eventRouter,
   //   orderRouter
 );
