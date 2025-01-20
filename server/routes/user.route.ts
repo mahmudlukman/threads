@@ -3,9 +3,11 @@ import { isAuthenticated } from "../middleware/auth";
 import {
   getActivity,
   getLoggedInUser,
+  getSavedThreads,
   getUserById,
   getUsers,
   getUserThreads,
+  toggleSaveThread,
   updateUser,
 } from "../controllers/user.controller";
 const userRouter = express.Router();
@@ -16,5 +18,11 @@ userRouter.put("/update-user", isAuthenticated, updateUser);
 userRouter.get("/user-threads/:userId", isAuthenticated, getUserThreads);
 userRouter.get("/get-activity/:userId", isAuthenticated, getActivity);
 userRouter.get("/get-users", isAuthenticated, getUsers);
+userRouter.post(
+  "/toggle-save-thread/:threadId",
+  isAuthenticated,
+  toggleSaveThread
+);
+userRouter.get("/saved-thread/:userId", isAuthenticated, getSavedThreads);
 
 export default userRouter;

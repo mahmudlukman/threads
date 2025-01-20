@@ -3,7 +3,11 @@ import ErrorHandler from "../utils/errorHandler";
 import { catchAsyncError } from "../middleware/catchAsyncError";
 import { NextFunction, Request, Response } from "express";
 import cloudinary from "cloudinary";
-import { GetUsersParams, UpdateUserParams } from "../@types";
+import {
+  GetSavedThreadParams,
+  GetUsersParams,
+  UpdateUserParams,
+} from "../@types";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
 import mongoose, { FilterQuery } from "mongoose";
@@ -212,6 +216,92 @@ export const getActivity = catchAsyncError(
         replies,
         totalReplies: replies.length,
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// toggle Save Thread
+export const toggleSaveThread = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?._id;
+      const { threadId } = req.params;
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const isThreadSaved = user.saved.includes(threadId as any);
+
+      if (isThreadSaved) {
+        // remove question from saved
+        await User.findByIdAndUpdate(
+          userId,
+          { $pull: { saved: threadId } },
+          { new: true }
+        );
+      } else {
+        // add question to saved
+        await User.findByIdAndUpdate(
+          userId,
+          { $addToSet: { saved: threadId } },
+          { new: true }
+        );
+      }
+
+      res.status(200).json({ success: true, message: "Toggle Successful" });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// get Saved Questions
+export const getSavedThreads = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { userId } = req.params;
+      const {
+        page = 1,
+        pageSize = 20,
+        searchQuery,
+      } = req.query as GetSavedThreadParams;
+
+      const skipAmount = (page - 1) * pageSize;
+
+      const query: FilterQuery<typeof Thread> = searchQuery
+        ? { title: { $regex: new RegExp(searchQuery, "i") } }
+        : {};
+
+      const user = await User.findById(userId).populate({
+        path: "saved",
+        match: query,
+        options: {
+          skip: skipAmount,
+          limit: pageSize + 1,
+        },
+        populate: {
+          path: "author",
+          model: User,
+          select: "_id userId name avatar",
+        },
+      });
+
+      const isNext = user?.saved && user.saved.length > pageSize;
+
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      const savedQuestions = user.saved;
+
+      res
+        .status(200)
+        .json({ success: true, questions: savedQuestions, isNext });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }

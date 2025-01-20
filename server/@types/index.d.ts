@@ -21,6 +21,11 @@ export type GetUsersParams = {
   pageSize?: number;
   sortBy?: SortOrder;
 };
+export type GetSavedThreadParams = {
+  page?: number;
+  pageSize?: number;
+  searchQuery?: string;
+};
 
 // ====== THREAD PARAMS
 export type CreateThreadParams = {
