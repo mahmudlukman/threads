@@ -313,7 +313,7 @@ export const getSavedThreads = catchAsyncError(
 export const followUser = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userToFollowId = req.params.id;
+      const { userToFollowId } = req.params;
       const currentUserId = req.user?._id;
 
       if (!currentUserId) {
@@ -379,7 +379,7 @@ export const followUser = catchAsyncError(
 export const unfollowUser = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userToUnfollowId = req.params.id;
+      const { userToUnfollowId } = req.params;
       const currentUserId = req.user?._id;
 
       if (!currentUserId) {
@@ -435,14 +435,14 @@ export const unfollowUser = catchAsyncError(
 export const getFollowers = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.params.id || req.user?._id;
+      const { userId } = req.params;
 
       if (!userId) {
         return next(new ErrorHandler("User ID is required", 400));
       }
 
       const user = await User.findById(userId)
-        .populate("followers", "name email avatar")
+        .populate("followers", "name email avatar username")
         .select("followers");
 
       if (!user) {
@@ -463,14 +463,14 @@ export const getFollowers = catchAsyncError(
 export const getFollowing = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.params.id || req.user?._id;
+      const { userId } = req.params;
 
       if (!userId) {
         return next(new ErrorHandler("User ID is required", 400));
       }
 
       const user = await User.findById(userId)
-        .populate("following", "name email avatar")
+        .populate("following", "name email avatar username")
         .select("following");
 
       if (!user) {

@@ -7,8 +7,8 @@ import { ErrorMiddleware } from "./middleware/error";
 import authRouter from "./routes/auth.route";
 import threadRouter from "./routes/thread.route";
 import userRouter from "./routes/user.route";
-// import eventRouter from "./routes/event.route";
-// import orderRouter from "./routes/order.route";
+import interactionRouter from "./routes/interaction.route";
+import communityRouter from "./routes/community.route";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -35,17 +35,10 @@ app.use(
   "/api/v1",
   authRouter,
   threadRouter,
-  userRouter
-  //   eventRouter,
-  //   orderRouter
+  userRouter,
+  interactionRouter,
+  communityRouter
 );
-
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json({
-    success: true,
-    message: "Welcome to Evently API",
-  });
-});
 
 //testing route
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {

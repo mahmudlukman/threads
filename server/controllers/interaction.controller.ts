@@ -5,7 +5,7 @@ import Thread from "../models/thread.model";
 import Interaction from "../models/interaction.model";
 
 // view question
-export const viewQuestion = catchAsyncError(
+export const viewThread = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?._id;

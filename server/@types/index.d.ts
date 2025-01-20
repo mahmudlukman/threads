@@ -63,12 +63,10 @@ export type GetAllChildThreadsParams = {
 
 // ====== COMMUNITY PARAMS
 export type CreateCommunityParams = {
-  id: string;
   name: string;
   username: string;
-  image: string;
-  bio: string;
-  createdById: string;
+  image?: string;
+  bio?: string;
 };
 
 export type GetCommunityParams = {
