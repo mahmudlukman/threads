@@ -14,6 +14,7 @@ import User from "../models/user.model";
 import cloudinary from "cloudinary";
 import Community from "../models/community.model";
 import mongoose from "mongoose";
+import Notification from "../models/notification.model";
 
 const populateThread = (query: any) => {
   return query
@@ -298,6 +299,12 @@ export const addCommentToThread = catchAsyncError(
         throw new Error("Thread not found");
       }
 
+      // Get the user making the comment
+      const user = await User.findById(userId);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
       // Create the new comment thread
       const commentThread = new Thread({
         text: commentText,
@@ -313,6 +320,21 @@ export const addCommentToThread = catchAsyncError(
 
       // Save the updated original thread to the database
       await originalThread.save();
+
+      // Create notification for the thread author
+      // Only create notification if commenter is not the thread author
+      if (originalThread.author._id.toString() !== userId) {
+        await Notification.create({
+          userId: originalThread.author._id,
+          title: "New Comment",
+          message: `${
+            user.name
+          } commented on your thread: "${originalThread.text.substring(0, 30)}${
+            originalThread.text.length > 30 ? "..." : ""
+          }"`,
+          type: "comment",
+        });
+      }
 
       res.status(200).json({
         success: true,

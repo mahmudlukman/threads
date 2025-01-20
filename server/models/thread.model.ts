@@ -7,6 +7,7 @@ interface IThread extends Document {
     public_id: string;
     url: string;
   };
+  likes: string[];
   community?: mongoose.Types.ObjectId;
   parentId?: string;
   children: mongoose.Types.ObjectId[];
@@ -31,6 +32,7 @@ const ThreadSchema: Schema<IThread> = new Schema(
         type: String,
       },
     },
+    likes: { type: [String], default: [] },
     community: {
       type: Schema.Types.ObjectId,
       ref: "Community",
@@ -38,10 +40,12 @@ const ThreadSchema: Schema<IThread> = new Schema(
     parentId: {
       type: String,
     },
-    children: [{
-      type: Schema.Types.ObjectId,
-      ref: "Thread"
-    }]
+    children: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Thread",
+      },
+    ],
   },
   { timestamps: true }
 );
