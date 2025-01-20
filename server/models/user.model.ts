@@ -18,8 +18,10 @@ export interface IUser extends Document {
   bio?: string;
   onboarded: Boolean;
   saved: Schema.Types.ObjectId[];
-  threads: [{ type: mongoose.Schema.Types.ObjectId; ref: "Thread" }];
-  communities: [{ type: mongoose.Schema.Types.ObjectId; ref: "Community" }];
+  followers: Schema.Types.ObjectId[];
+  following: Schema.Types.ObjectId[];
+  threads: [{ type: Schema.Types.ObjectId; ref: "Thread" }];
+  communities: [{ type: Schema.Types.ObjectId; ref: "Community" }];
   comparePassword: (password: string) => Promise<boolean>;
   SignAccessToken: () => string;
 }
@@ -64,6 +66,18 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       default: false,
     },
     saved: [{ type: Schema.Types.ObjectId, ref: "Thread" }],
+    followers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    following: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     threads: [
       {
         type: Schema.Types.ObjectId,
