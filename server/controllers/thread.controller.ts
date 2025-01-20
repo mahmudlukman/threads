@@ -345,3 +345,77 @@ export const addCommentToThread = catchAsyncError(
     }
   }
 );
+
+// COMMENT ON THREAD
+export const likeThread = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?._id;
+      const { threadId } = req.params;
+
+      if (!userId) {
+        return next(new ErrorHandler("User not authenticated", 401));
+      }
+
+      // Find thread and populate author for notification
+      const thread = await Thread.findById(threadId)
+        .populate('author');
+
+      if (!thread) {
+        return next(new ErrorHandler("Thread not found", 404));
+      }
+
+      const userIdString = userId.toString();
+      const isLiked = thread.likes.includes(userIdString);
+
+      // Get user info for notification
+      const user = await User.findById(userId);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      let action: 'liked' | 'unliked' = 'liked';
+      
+      // Update likes array
+      if (isLiked) {
+        thread.likes = thread.likes.filter(id => id !== userIdString);
+        action = 'unliked';
+      } else {
+        thread.likes.push(userIdString);
+        action = 'liked';
+      }
+
+      // Update thread atomically using findOneAndUpdate
+      const updatedThread = await Thread.findOneAndUpdate(
+        { _id: threadId },
+        { $set: { likes: thread.likes }},
+        { 
+          new: true,
+          runValidators: true 
+        }
+      ).populate('author');
+
+      if (!updatedThread) {
+        return next(new ErrorHandler("Failed to update thread", 500));
+      }
+
+      // Send notification only for likes (not unlikes) and if the liker isn't the author
+      if (action === 'liked' && thread.author._id.toString() !== userIdString) {
+        await Notification.create({
+          userId: thread.author._id,
+          title: "New Like",
+          message: `${user.name} liked your thread: "${thread.text.substring(0, 30)}${thread.text.length > 30 ? '...' : ''}"`,
+          type: "like"
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        thread: updatedThread,
+        action
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
