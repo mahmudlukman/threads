@@ -11,6 +11,7 @@ import {
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
 import mongoose, { FilterQuery } from "mongoose";
+import Notification from "../models/notification.model";
 
 // get logged in user
 export const getLoggedInUser = catchAsyncError(
@@ -302,6 +303,184 @@ export const getSavedThreads = catchAsyncError(
       res
         .status(200)
         .json({ success: true, questions: savedQuestions, isNext });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// Follow a user
+export const followUser = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userToFollowId = req.params.id;
+      const currentUserId = req.user?._id;
+
+      if (!currentUserId) {
+        return next(new ErrorHandler("Not authenticated", 401));
+      }
+
+      if (userToFollowId === currentUserId.toString()) {
+        return next(new ErrorHandler("You cannot follow yourself", 400));
+      }
+
+      // Find both users
+      const userToFollow = await User.findById(userToFollowId);
+      const currentUser = await User.findById(currentUserId);
+
+      if (!userToFollow || !currentUser) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      // Check if already following
+      const isFollowing = userToFollow.followers.includes(currentUserId);
+      if (isFollowing) {
+        return next(
+          new ErrorHandler("You are already following this user", 400)
+        );
+      }
+
+      try {
+        // Add to followers and following arrays
+        await User.findByIdAndUpdate(
+          userToFollowId,
+          { $push: { followers: currentUserId } },
+          { new: true }
+        );
+
+        await User.findByIdAndUpdate(
+          currentUserId,
+          { $push: { following: userToFollowId } },
+          { new: true }
+        );
+
+        // Create notification
+        await Notification.create({
+          userId: userToFollowId,
+          title: "New Follower",
+          message: `${currentUser.name} started following you`,
+          type: "follow",
+        });
+
+        res.status(200).json({
+          success: true,
+          message: `You are now following ${userToFollow.name}`,
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// Unfollow a user
+export const unfollowUser = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userToUnfollowId = req.params.id;
+      const currentUserId = req.user?._id;
+
+      if (!currentUserId) {
+        return next(new ErrorHandler("Not authenticated", 401));
+      }
+
+      if (userToUnfollowId === currentUserId.toString()) {
+        return next(new ErrorHandler("You cannot unfollow yourself", 400));
+      }
+
+      // Find both users
+      const userToUnfollow = await User.findById(userToUnfollowId);
+      const currentUser = await User.findById(currentUserId);
+
+      if (!userToUnfollow || !currentUser) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      // Check if actually following
+      const isFollowing = userToUnfollow.followers.includes(currentUserId);
+      if (!isFollowing) {
+        return next(new ErrorHandler("You are not following this user", 400));
+      }
+
+      try {
+        // Remove from followers and following arrays
+        await User.findByIdAndUpdate(
+          userToUnfollowId,
+          { $pull: { followers: currentUserId } },
+          { new: true }
+        );
+
+        await User.findByIdAndUpdate(
+          currentUserId,
+          { $pull: { following: userToUnfollowId } },
+          { new: true }
+        );
+
+        res.status(200).json({
+          success: true,
+          message: `You have unfollowed ${userToUnfollow.name}`,
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// Get user's followers
+export const getFollowers = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.id || req.user?._id;
+
+      if (!userId) {
+        return next(new ErrorHandler("User ID is required", 400));
+      }
+
+      const user = await User.findById(userId)
+        .populate("followers", "name email avatar")
+        .select("followers");
+
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      res.status(200).json({
+        success: true,
+        followers: user.followers,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// Get users being followed
+export const getFollowing = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.id || req.user?._id;
+
+      if (!userId) {
+        return next(new ErrorHandler("User ID is required", 400));
+      }
+
+      const user = await User.findById(userId)
+        .populate("following", "name email avatar")
+        .select("following");
+
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      res.status(200).json({
+        success: true,
+        following: user.following,
+      });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
