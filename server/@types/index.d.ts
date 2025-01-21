@@ -69,10 +69,11 @@ export type CreateCommunityParams = {
   bio?: string;
 };
 
-export type GetCommunityParams = {
-  query: string;
-  limit: number;
-  page: number;
+export type GetCommunitiesParams = {
+  searchString?: string;
+  pageNumber?: number;
+  pageSize?: number;
+  sortBy?: SortOrder;
 };
 
 export type AddMemberToCommunityParams = {
@@ -87,9 +88,10 @@ export type RemoveMemberFromCommunityParams = {
 
 export type UpdateCommunityInfoParams = {
   communityId: string;
-  name: string;
-  username: string;
-  image: string;
+  name?: string;
+  username?: string;
+  bio?: string;
+  image?: string;
 };
 
 export type DeleteCommunityParams = {

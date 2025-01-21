@@ -28,6 +28,7 @@ export interface ICommunity extends Document {
     }
   ];
   members: {
+    [x: string]: any;
     type: Schema.Types.ObjectId;
     ref: "User";
   };
