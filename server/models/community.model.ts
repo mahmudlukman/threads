@@ -18,6 +18,7 @@ export interface ICommunity extends Document {
     type: string;
   };
   createdBy: {
+    _id: any;
     type: Schema.Types.ObjectId;
     ref: "User";
   };

@@ -11,6 +11,7 @@ import {
 } from "../@types";
 import Thread from "../models/thread.model";
 import { FilterQuery, Types } from "mongoose";
+import Notification from "../models/notification.model";
 
 // Create community
 export const createCommunity = catchAsyncError(
@@ -206,7 +207,7 @@ export const addMemberToCommunity = catchAsyncError(
       }
 
       // Find the community by its unique id
-      const community = await Community.findById(communityId);
+      const community = await Community.findById(communityId).populate("createdBy", "name _id");
       if (!community) {
         return next(new ErrorHandler("Community not found", 404));
       }
@@ -246,6 +247,13 @@ export const addMemberToCommunity = catchAsyncError(
           { new: true }
         ),
       ]);
+
+      await Notification.create({
+        userId: community.createdBy._id.toString(),
+        title: "New Community Member",
+        message: `${user.name} has joined your community "${community.name}"`,
+        type: "follow"
+      });
 
       // Fetch updated community to return in response
       const updatedCommunity = await Community.findById(communityId)
@@ -359,7 +367,10 @@ export const updateCommunity = catchAsyncError(
       // Check if the logged-in user is the creator of the community
       if (community.createdBy.toString() !== userId.toString()) {
         return next(
-          new ErrorHandler("Only the community creator can update this community", 403)
+          new ErrorHandler(
+            "Only the community creator can update this community",
+            403
+          )
         );
       }
 
@@ -398,6 +409,71 @@ export const updateCommunity = catchAsyncError(
           );
         }
       }
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// Delete community
+export const deleteCommunity = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { communityId } = req.params;
+      const userId = req.user?._id;
+
+      if (!userId) {
+        return next(new ErrorHandler("Authentication required", 401));
+      }
+
+      // Find the community
+      const community = await Community.findById(communityId);
+
+      if (!community) {
+        return next(new ErrorHandler("Community not found", 404));
+      }
+
+      // Check if logged-in user is the creator
+      if (community.createdBy.toString() !== userId.toString()) {
+        return next(
+          new ErrorHandler(
+            "Only the community creator can delete this community",
+            403
+          )
+        );
+      }
+
+      // Delete community image from cloudinary if it exists
+      if (community.image?.public_id) {
+        await cloudinary.v2.uploader.destroy(community.image.public_id);
+      }
+
+      // Delete all threads associated with the community
+      await Thread.deleteMany({ community: communityId });
+
+      // Find all users who are part of the community
+      const communityUsers = await User.find({ communities: communityId });
+
+      // Remove the community from the 'communities' array for each user
+      const updateUserPromises = communityUsers.map((user) => {
+        return User.findByIdAndUpdate(user._id, {
+          $pull: {
+            communities: communityId,
+            communitiesCreated: communityId,
+          },
+        });
+      });
+
+      // Execute all user updates and delete the community
+      await Promise.all([
+        ...updateUserPromises,
+        Community.findByIdAndDelete(communityId),
+      ]);
+
+      res.status(200).json({
+        success: true,
+        message: "Community and all associated data deleted successfully",
+      });
+    } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
   }

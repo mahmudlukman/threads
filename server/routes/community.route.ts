@@ -31,5 +31,10 @@ communityRouter.put(
   isAuthenticated,
   updateCommunity
 );
+communityRouter.delete(
+  "/update-community/:communityId",
+  isAuthenticated,
+  updateCommunity
+);
 
 export default communityRouter;
