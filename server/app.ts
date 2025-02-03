@@ -14,15 +14,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //body parser
-
 app.use(express.json({ limit: "50mb" }));
+app.disable("x-powered-by");
 
 //cookie parser
-
 app.use(cookieParser());
 
 //cors=>cross origin resource sharing
-
 app.use(
   cors({
     origin: ["http://localhost:3000"],
