@@ -2,6 +2,7 @@ import express from "express";
 import {
   addMemberToCommunity,
   createCommunity,
+  deleteCommunity,
   getCommunities,
   getCommunityDetails,
   getCommunityPosts,
@@ -16,12 +17,12 @@ communityRouter.post("/create-community", isAuthenticated, createCommunity);
 communityRouter.get("/community/:id", isAuthenticated, getCommunityDetails);
 communityRouter.get("/community-posts/:id", isAuthenticated, getCommunityPosts);
 communityRouter.get("/communities", isAuthenticated, getCommunities);
-communityRouter.post(
+communityRouter.put(
   "/community/join/:communityId",
   isAuthenticated,
   addMemberToCommunity
 );
-communityRouter.delete(
+communityRouter.put(
   "/community/leave/:communityId",
   isAuthenticated,
   removeMemberFromCommunity
@@ -32,9 +33,9 @@ communityRouter.put(
   updateCommunity
 );
 communityRouter.delete(
-  "/update-community/:communityId",
+  "/delete-community/:communityId",
   isAuthenticated,
-  updateCommunity
+  deleteCommunity
 );
 
 export default communityRouter;

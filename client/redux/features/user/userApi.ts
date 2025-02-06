@@ -12,14 +12,25 @@ export const userApi = apiSlice.injectEndpoints({
       providesTags: (result, error, arg) => [{ type: "User", id: arg.userId }],
     }),
     getUsers: builder.query({
-      query: () => ({
+      query: ({ searchString, pageNumber, pageSize, sortBy }) => ({
         url: "get-users",
         method: "GET",
+        params: {
+          searchString,
+          pageNumber,
+          pageSize,
+          sortBy,
+        },
         credentials: "include" as const,
       }),
       providesTags: (result) => [
-        ...getUsersFromResult(result),
-        { type: "User", id: "LIST" },
+        ...(result?.users
+          ? result.users.map(({ _id }: { _id: string }) => ({
+              type: "User" as const,
+              id: _id,
+            }))
+          : []),
+        { type: "User" as const, id: "LIST" },
       ],
     }),
     getUserThreads: builder.query({

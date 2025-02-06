@@ -1,4 +1,5 @@
 import Bottombar from "@/components/shared/Bottombar";
+import RightSidebar from "@/components/shared/RightSidebar";
 import Topbar from "@/components/shared/Topbar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -11,7 +12,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <section className="main-container">
           <div className="w-full max-w-4xl">{children}</div>
         </section>
-        {/* <RightSidebar /> */}
+        <RightSidebar />
       </main>
 
       <Bottombar />
