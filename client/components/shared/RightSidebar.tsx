@@ -1,24 +1,29 @@
 "use client";
 
 import UserCard from "../cards/UserCard";
-// import { fetchCommunities } from "@/lib/actions/community.actions";
 import { useSelector } from "react-redux";
 import { RootState } from "@/types";
 import { useGetUsersQuery } from "../../redux/features/user/userApi";
-// import { useRouter } from "next/navigation";
+import { useGetCommunitiesQuery } from "../../redux/features/community/communityApi";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const RightSidebar = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   // const router = useRouter();
-  const { data, isError, isLoading } = useGetUsersQuery({pageSize: 4});
+  const { data: users, isError, isLoading } = useGetUsersQuery({ pageSize: 4 });
+  const { data: communities } = useGetCommunitiesQuery({ pageSize: 4 });
 
-  const similarMinds = data?.users || [];
+  const similarMinds = users?.users || [];
 
-  console.log(similarMinds);
+  const suggestedCommunities = communities?.communities || [];
 
-  //   const suggestedCOmmunities = await fetchCommunities({ pageSize: 4 });
+  // useEffect(() => {
+  //   if (!user) {
+  //     router.push("/login");
+  //   }
+  // }, [user, router]);
 
-  if (!user) return null;
   if (isLoading) return <div>Loading Users</div>;
   if (isError) return <div>Error loading Users</div>;
 
@@ -29,26 +34,33 @@ const RightSidebar = () => {
           Suggested Communities
         </h3>
 
-        {/* <div className="mt-7 flex w-[350px] flex-col gap-9">
-          {suggestedCOmmunities.communities.length > 0 ? (
+        <div className="mt-7 flex w-[350px] flex-col gap-9">
+          {suggestedCommunities.length > 0 ? (
             <>
-              {suggestedCOmmunities.communities.map((community) => (
-                <UserCard
-                  key={community.id}
-                  id={community.id}
-                  name={community.name}
-                  username={community.username}
-                  imgUrl={community.image}
-                  personType="Community"
-                />
-              ))}
+              {suggestedCommunities.map(
+                (community: {
+                  id: string;
+                  name: string;
+                  username: string;
+                  image: string;
+                }) => (
+                  <UserCard
+                    key={community.id}
+                    id={community.id}
+                    name={community.name}
+                    username={community.username}
+                    avatar={community.image}
+                    personType="Community"
+                  />
+                )
+              )}
             </>
           ) : (
             <p className="!text-base-regular text-light-3">
               No communities yet
             </p>
           )}
-        </div> */}
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col justify-start">
