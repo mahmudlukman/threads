@@ -8,21 +8,31 @@ import { useGetCommunitiesQuery } from "../../redux/features/community/community
 import { useEffect } from "react";
 import { redirect } from "next/navigation";
 
+interface User {
+  _id: string;
+  name: string;
+  username: string;
+  avatar: {
+    url: string;
+  } | null;
+}
+
+interface Community {
+  _id: string;
+  name: string;
+  username: string;
+  avatar: {
+    url: string;
+  } | null;
+}
+
 const RightSidebar = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
-  // const router = useRouter();
+  // const { user } = useSelector((state: RootState) => state.auth);
   const { data: users, isError, isLoading } = useGetUsersQuery({ pageSize: 4 });
   const { data: communities } = useGetCommunitiesQuery({ pageSize: 4 });
 
   const similarMinds = users?.users || [];
-
   const suggestedCommunities = communities?.communities || [];
-
-  // useEffect(() => {
-  //   if (!user) {
-  //     redirect("/login");
-  //   }
-  // }, [user]);
 
   if (isLoading) return <div>Loading Users</div>;
   if (isError) return <div>Error loading Users</div>;
@@ -37,23 +47,16 @@ const RightSidebar = () => {
         <div className="mt-7 flex w-[350px] flex-col gap-9">
           {suggestedCommunities.length > 0 ? (
             <>
-              {suggestedCommunities.map(
-                (community: {
-                  id: string;
-                  name: string;
-                  username: string;
-                  image: string;
-                }) => (
-                  <UserCard
-                    key={community.id}
-                    id={community.id}
-                    name={community.name}
-                    username={community.username}
-                    avatar={community.image}
-                    personType="Community"
-                  />
-                )
-              )}
+              {suggestedCommunities.map((community: Community) => (
+                <UserCard
+                  key={community._id}
+                  id={community._id}
+                  name={community.name}
+                  username={community.username}
+                  avatar={community.avatar?.url || ""}
+                  personType="Community"
+                />
+              ))}
             </>
           ) : (
             <p className="!text-base-regular text-light-3">
@@ -68,23 +71,16 @@ const RightSidebar = () => {
         <div className="mt-7 flex w-[350px] flex-col gap-10">
           {similarMinds.length > 0 ? (
             <>
-              {similarMinds.map(
-                (person: {
-                  id: string;
-                  name: string;
-                  username: string;
-                  avatar: string;
-                }) => (
-                  <UserCard
-                    key={person.id}
-                    id={person.id}
-                    name={person.name}
-                    username={person.username}
-                    avatar={person.avatar}
-                    personType="User"
-                  />
-                )
-              )}
+              {similarMinds.map((person: User) => (
+                <UserCard
+                  key={person._id}
+                  id={person._id}
+                  name={person.name}
+                  username={person.username}
+                  avatar={person.avatar?.url || ""}
+                  personType="User"
+                />
+              ))}
             </>
           ) : (
             <p className="!text-base-regular text-light-3">No users yet</p>

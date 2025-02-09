@@ -49,7 +49,8 @@ export const getUserById = catchAsyncError(
 export const updateUser = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, username, bio, avatar }: UpdateUserParams = req.body;
+      const { name, username, bio, avatar, isOnboarding }: UpdateUserParams =
+        req.body;
       const userId = req.user?._id;
       const user = await User.findById(userId);
 
@@ -73,6 +74,10 @@ export const updateUser = catchAsyncError(
           public_id: myCloud.public_id,
           url: myCloud.secure_url,
         };
+      }
+
+      if (isOnboarding) {
+        user.onboarded = true;
       }
 
       await user.save();

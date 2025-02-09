@@ -56,17 +56,14 @@ export const userApi = apiSlice.injectEndpoints({
       ],
     }),
     updateUserProfile: builder.mutation({
-      query: ({ data }) => ({
+      query: (data) => ({
         url: "update-user",
         method: "PUT",
         body: data,
         formData: true,
         credentials: "include" as const,
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "User", id: arg.data.id },
-        { type: "User", id: "LIST" },
-      ],
+      invalidatesTags: () => [{ type: "User", id: "LIST" }],
     }),
     getSavedThreads: builder.query({
       query: ({ userId, searchQuery, filter, page, pageSize }) => ({

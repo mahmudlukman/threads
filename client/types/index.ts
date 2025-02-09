@@ -25,12 +25,37 @@ export const RegisterSchema = z.object({
   }),
 });
 
+export const UserValidation = z.object({
+  avatar: z.string().optional(),
+  name: z
+    .string()
+    .min(3, { message: "Minimum 3 characters." })
+    .max(30, { message: "Maximum 30 characters." }),
+  username: z
+    .string()
+    .min(3, { message: "Minimum 3 characters." })
+    .max(30, { message: "Maximum 30 characters." }),
+  bio: z
+    .string()
+    .min(3, { message: "Minimum 3 characters." })
+    .max(1000, { message: "Maximum 1000 characters." }),
+});
+
+export const ThreadValidation = z.object({
+  thread: z.string().nonempty().min(3, { message: "Minimum 3 characters." }),
+  accountId: z.string(),
+});
+
+export const CommentValidation = z.object({
+  thread: z.string().nonempty().min(3, { message: "Minimum 3 characters." }),
+});
+
 interface Avatar {
   public_id: string;
   url: string;
 }
 
-interface User {
+export interface User {
   _id: string;
   avatar?: Avatar | null;
   username?: string;
@@ -52,7 +77,6 @@ export interface RootState {
     user: User | null;
   };
 }
-
 
 // Community Types
 export interface ICommunity {

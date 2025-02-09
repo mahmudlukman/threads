@@ -2,14 +2,18 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
 import { Button } from "../ui/button";
+
+interface AvatarData {
+  public_id?: string;
+  url?: string;
+}
 
 interface Props {
   id: string;
   name: string;
   username: string;
-  avatar: string;
+  avatar: string | AvatarData;
   personType: string;
 }
 
@@ -28,13 +32,21 @@ const UserCard = ({ id, name, username, avatar, personType }: Props) => {
       .slice(0, 2);
   };
 
+  const getAvatarUrl = (avatar: string | AvatarData) => {
+    if (!avatar) return "";
+    if (typeof avatar === "string") return avatar;
+    return avatar.url || "";
+  };
+
+  const avatarUrl = getAvatarUrl(avatar);
+
   return (
     <article className="user-card">
       <div className="user-card_avatar">
         <div className="relative h-12 w-12">
-          {avatar ? (
+          {avatarUrl ? (
             <Image
-              src={avatar}
+              src={avatarUrl}
               alt="user_logo"
               fill
               className="rounded-full object-cover"

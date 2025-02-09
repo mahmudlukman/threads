@@ -13,6 +13,7 @@ export type UpdateUserParams = {
   name: string;
   bio: string;
   avatar?: string;
+  isOnboarding?: boolean;
 };
 
 export type GetUsersParams = {

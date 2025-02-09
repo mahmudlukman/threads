@@ -1,7 +1,7 @@
 "use client"
 
 import { useGetThreadsQuery } from "@/redux/features/thread/threadApi";
-import { redirect } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import ThreadCard from "@/components/cards/ThreadCard";
 import Pagination from "@/components/shared/Pagination";
 import { useSelector } from "react-redux";
@@ -9,14 +9,11 @@ import { IThread, RootState } from "@/types";
 
 const THREADS_PER_PAGE = 6; // Match the default limit from your API
 
-const Home = ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) => {
+const Home = () => {
   const { user } = useSelector((state: RootState) => state.auth);
+  const searchParams = useSearchParams();
 
-  const currentPage = searchParams.page ? +searchParams.page : 1;
+  const currentPage = Number(searchParams.get('page')) || 1;
   
   // Using RTK Query hook with pagination parameters
   const { data: result, isLoading, error } = useGetThreadsQuery({

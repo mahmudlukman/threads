@@ -2,13 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { formatDateString } from "@/lib/utils";
-// import DeleteThread from "../forms/DeleteThread";
+import DeleteThread from "../forms/DeleteThread";
 
 interface Props {
   id: string;
   currentUserId: string;
   parentId: string | null;
   content: string;
+  // Update image type to match the model
+  image?: {
+    public_id: string;
+    url: string;
+  };
   author: {
     name: string;
     avatar: string;
@@ -30,9 +35,10 @@ interface Props {
 
 const ThreadCard = ({
   id,
-  // currentUserId,
-  // parentId,
+  currentUserId,
+  parentId,
   content,
+  image,
   author,
   community,
   createdAt,
@@ -48,7 +54,7 @@ const ThreadCard = ({
       <div className="flex items-start justify-between">
         <div className="flex w-full flex-1 flex-row gap-4">
           <div className="flex flex-col items-center">
-            <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
+            <Link href={`/profile/${author?.id}`} className="relative h-11 w-11">
               <Image
                 src={author.avatar}
                 alt="user_community_image"
@@ -68,6 +74,21 @@ const ThreadCard = ({
             </Link>
 
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
+
+            {/* Update image display section */}
+            {image && image.url && (
+              <div className="mt-3 rounded-xl overflow-hidden">
+                <div className="relative w-full max-h-[512px] min-h-[200px]">
+                  <Image
+                    src={image.url}
+                    alt="Thread image"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
+              </div>
+            )}
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className="flex gap-3.5">
@@ -114,13 +135,13 @@ const ThreadCard = ({
           </div>
         </div>
 
-        {/* <DeleteThread
+        <DeleteThread
           threadId={JSON.stringify(id)}
           currentUserId={currentUserId}
           authorId={author.id}
           parentId={parentId}
           isComment={isComment}
-        /> */}
+        />
       </div>
 
       {!isComment && comments.length > 0 && (

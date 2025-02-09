@@ -1,7 +1,6 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import { IThread, RootState } from "@/types";
+import { IThread } from "@/types";
 import { useGetUserThreadsQuery } from "@/redux/features/user/userApi";
 import { useGetCommunityPostsQuery } from "@/redux/features/community/communityApi";
 import { redirect } from "next/navigation";
@@ -13,9 +12,7 @@ interface Props {
   accountType: string;
 }
 
-function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
-  const { user } = useSelector((state: RootState) => state.auth);
-
+const ThreadsTab = ({ currentUserId, accountId, accountType }: Props) => {
   // Conditionally fetch threads based on account type
   const {
     data: userThreadsData,
@@ -62,7 +59,7 @@ function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
       ? {
           name: result.name,
           avatar: result.avatar,
-          id: result.id,
+          id: result?._id,
         }
       : null;
 
@@ -109,6 +106,6 @@ function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
       ))}
     </section>
   );
-}
+};
 
 export default ThreadsTab;
