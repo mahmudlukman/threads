@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { RootState } from "@/types";
 // import { OrganizationSwitcher, SignedIn, SignOutButton } from "@clerk/nextjs";
@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 
-function Topbar() {
+const Topbar = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   return (
     <nav className="topbar">
@@ -40,6 +40,6 @@ function Topbar() {
       </div>
     </nav>
   );
-}
+};
 
 export default Topbar;

@@ -10,7 +10,7 @@ export interface ICommunity extends Document {
     type: string;
     required: true;
   };
-  image?: {
+  avatar?: {
     public_id: string;
     url: string;
   };
@@ -46,7 +46,7 @@ const CommunitySchema: Schema<ICommunity> = new Schema(
       type: String,
       required: [true, "Please enter a name"],
     },
-    image: {
+    avatar: {
       public_id: {
         type: String,
       },

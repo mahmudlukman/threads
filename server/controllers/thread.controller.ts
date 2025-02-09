@@ -346,7 +346,7 @@ export const addCommentToThread = catchAsyncError(
   }
 );
 
-// COMMENT ON THREAD
+// LIKE THREAD
 export const likeThread = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {

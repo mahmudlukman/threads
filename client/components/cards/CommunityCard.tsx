@@ -7,20 +7,20 @@ interface Props {
   id: string;
   name: string;
   username: string;
-  image: string;
+  avatar: string;
   bio: string;
   members: {
     avatar: string;
   }[];
 }
 
-function CommunityCard({ id, name, username, image, bio, members }: Props) {
+function CommunityCard({ id, name, username, avatar, bio, members }: Props) {
   return (
     <article className='community-card'>
       <div className='flex flex-wrap items-center gap-3'>
         <Link href={`/communities/${id}`} className='relative h-12 w-12'>
           <Image
-            src={image}
+            src={avatar}
             alt='community_logo'
             fill
             className='rounded-full object-cover'

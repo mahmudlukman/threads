@@ -10,7 +10,7 @@ interface Props {
   path: string;
 }
 
-function Pagination({ pageNumber, isNext, path }: Props) {
+const Pagination = ({ pageNumber, isNext, path }: Props) => {
   const router = useRouter();
 
   const handleNavigation = (type: string) => {
@@ -50,6 +50,6 @@ function Pagination({ pageNumber, isNext, path }: Props) {
       </Button>
     </div>
   );
-}
+};
 
 export default Pagination;

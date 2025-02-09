@@ -3,16 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-// import { SignOutButton, SignedIn, useAuth } from "@clerk/nextjs";
 
 import { sidebarLinks } from "@/constants";
 import { useSelector } from "react-redux";
 import { RootState } from "@/types";
 
 const LeftSidebar = () => {
-//   const router = useRouter();
   const pathname = usePathname();
-
   const { user } = useSelector((state: RootState) => state.auth);
 
   return (

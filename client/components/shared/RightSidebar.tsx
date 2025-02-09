@@ -6,7 +6,7 @@ import { RootState } from "@/types";
 import { useGetUsersQuery } from "../../redux/features/user/userApi";
 import { useGetCommunitiesQuery } from "../../redux/features/community/communityApi";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 const RightSidebar = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -20,9 +20,9 @@ const RightSidebar = () => {
 
   // useEffect(() => {
   //   if (!user) {
-  //     router.push("/login");
+  //     redirect("/login");
   //   }
-  // }, [user, router]);
+  // }, [user]);
 
   if (isLoading) return <div>Loading Users</div>;
   if (isError) return <div>Error loading Users</div>;

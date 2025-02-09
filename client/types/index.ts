@@ -25,31 +25,26 @@ export const RegisterSchema = z.object({
   }),
 });
 
-// ====== URL QUERY PARAMS
-export type UrlQueryParams = {
-  params: string;
-  key: string;
-  value: string | null;
-};
-
-export type RemoveUrlQueryParams = {
-  params: string;
-  keysToRemove: string[];
-};
-
-export type SearchParamProps = {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+interface Avatar {
+  public_id: string;
+  url: string;
+}
 
 interface User {
   _id: string;
-  avatar?: {
-    public_id: string;
-    url: string;
-  } | null;
+  avatar?: Avatar | null;
   username?: string;
+  email?: string;
   name?: string;
+  bio?: string;
+  onboarded?: boolean;
+  saved?: string[];
+  followers?: string[];
+  following?: string[];
+  threads?: string[];
+  communities?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface RootState {
@@ -58,30 +53,59 @@ export interface RootState {
   };
 }
 
-export interface IEvent {
+
+// Community Types
+export interface ICommunity {
   _id: string;
-  title: string;
-  description?: string;
-  location?: string;
-  image?: {
-    public_id: string;
-    url: string;
-  };
-  startDateTime: Date;
-  endDateTime: Date;
-  price: string;
-  categoryId: string;
-  isFree: boolean;
-  url?: string;
-  category: { _id: string; name: string };
-  organizer: { _id: string; name: string };
+  username: string;
+  name: string;
+  avatar?: Avatar;
+  bio?: string;
+  createdBy: string; // User ID
+  threads: string[];
+  members: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export type IOrderItem = {
+// Thread Types (based on your previous components)
+export interface IThread {
   _id: string;
-  totalAmount: string;
-  createdAt: Date;
-  eventTitle: string;
-  eventId: string;
-  buyer: string;
-};
+  text: string;
+  author: {
+    _id: string;
+    name: string;
+    avatar: string;
+  };
+  community?: {
+    _id: string;
+    name: string;
+    avatar: string;
+  } | null;
+  parentId?: string | null;
+  children: IThread[];
+  createdAt: string;
+}
+
+// API Response Types
+export interface UserResponse {
+  users: User[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface CommunityResponse {
+  communities: ICommunity[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+// Utility Types for Queries
+export interface PaginationParams {
+  searchString?: string;
+  pageNumber?: number;
+  pageSize?: number;
+  sortBy?: string;
+}
