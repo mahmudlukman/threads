@@ -94,6 +94,7 @@ export interface ICommunity {
 
 // Thread Types (based on your previous components)
 export interface IThread {
+  image: { public_id: string; url: string } | null;
   _id: string;
   text: string;
   author: {

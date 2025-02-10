@@ -9,25 +9,24 @@ interface Props {
   currentUserId: string;
   parentId: string | null;
   content: string;
-  // Update image type to match the model
   image?: {
     public_id: string;
     url: string;
   };
   author: {
     name: string;
-    avatar: string;
+    avatar: string | { url: string };
     id: string;
   };
   community: {
     id: string;
     name: string;
-    avatar: string;
+    avatar: string | { url: string };
   } | null;
   createdAt: string;
   comments: {
     author: {
-      avatar: string;
+      avatar: string | { url: string };
     };
   }[];
   isComment?: boolean;
@@ -45,6 +44,27 @@ const ThreadCard = ({
   comments,
   isComment,
 }: Props) => {
+  // Helper function to get initials
+  console.log('Thread Image Data:', image);
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  // Helper function to get avatar URL
+  const getAvatarUrl = (avatar: string | { url: string } | undefined) => {
+    if (!avatar) return "";
+    if (typeof avatar === "string") return avatar;
+    return avatar.url || "";
+  };
+
+  const authorAvatarUrl = getAvatarUrl(author.avatar);
+  const communityAvatarUrl = community ? getAvatarUrl(community.avatar) : "";
+
   return (
     <article
       className={`flex w-full flex-col rounded-xl ${
@@ -54,13 +74,21 @@ const ThreadCard = ({
       <div className="flex items-start justify-between">
         <div className="flex w-full flex-1 flex-row gap-4">
           <div className="flex flex-col items-center">
-            <Link href={`/profile/${author?.id}`} className="relative h-11 w-11">
-              <Image
-                src={author.avatar}
-                alt="user_community_image"
-                fill
-                className="cursor-pointer rounded-full"
-              />
+            <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
+              {authorAvatarUrl ? (
+                <Image
+                  src={authorAvatarUrl}
+                  alt="user_community_image"
+                  fill
+                  className="cursor-pointer rounded-full object-cover"
+                />
+              ) : (
+                <div className="h-full w-full rounded-full bg-gray-500 flex items-center justify-center">
+                  <span className="text-base-semibold text-light-1">
+                    {getInitials(author.name)}
+                  </span>
+                </div>
+              )}
             </Link>
 
             <div className="thread-card_bar" />
@@ -75,17 +103,19 @@ const ThreadCard = ({
 
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
 
-            {/* Update image display section */}
-            {image && image.url && (
-              <div className="mt-3 rounded-xl overflow-hidden">
-                <div className="relative w-full max-h-[512px] min-h-[200px]">
-                  <Image
-                    src={image.url}
-                    alt="Thread image"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
+            {/* Thread Image Section */}
+            {image?.url && (
+              <div className="mt-3 rounded-2xl overflow-hidden border border-gray-700">
+                <div className="relative w-full">
+                  <div style={{ paddingTop: "56.25%" }} className="relative">
+                    <Image
+                      src={image.url}
+                      alt="Thread image"
+                      fill
+                      className="object-contain absolute top-0 left-0"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -102,7 +132,7 @@ const ThreadCard = ({
                 <Link href={`/thread/${id}`}>
                   <Image
                     src="/assets/reply.svg"
-                    alt="heart"
+                    alt="reply"
                     width={24}
                     height={24}
                     className="cursor-pointer object-contain"
@@ -110,14 +140,14 @@ const ThreadCard = ({
                 </Link>
                 <Image
                   src="/assets/repost.svg"
-                  alt="heart"
+                  alt="repost"
                   width={24}
                   height={24}
                   className="cursor-pointer object-contain"
                 />
                 <Image
                   src="/assets/share.svg"
-                  alt="heart"
+                  alt="share"
                   width={24}
                   height={24}
                   className="cursor-pointer object-contain"
@@ -146,16 +176,33 @@ const ThreadCard = ({
 
       {!isComment && comments.length > 0 && (
         <div className="ml-1 mt-3 flex items-center gap-2">
-          {comments.slice(0, 2).map((comment, index) => (
-            <Image
-              key={index}
-              src={comment.author.avatar}
-              alt={`user_${index}`}
-              width={24}
-              height={24}
-              className={`${index !== 0 && "-ml-5"} rounded-full object-cover`}
-            />
-          ))}
+          {comments.slice(0, 2).map((comment, index) => {
+            const commentAvatarUrl = getAvatarUrl(comment.author.avatar);
+            return (
+              <div key={index} className="relative w-6 h-6">
+                {commentAvatarUrl ? (
+                  <Image
+                    src={commentAvatarUrl}
+                    alt={`user_${index}`}
+                    fill
+                    className={`${
+                      index !== 0 && "-ml-5"
+                    } rounded-full object-cover`}
+                  />
+                ) : (
+                  <div
+                    className={`${
+                      index !== 0 && "-ml-5"
+                    } w-full h-full rounded-full bg-gray-500 flex items-center justify-center`}
+                  >
+                    <span className="text-xs text-light-1">
+                      {getInitials("User")}
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
           <Link href={`/thread/${id}`}>
             <p className="mt-1 text-subtle-medium text-gray-1">
@@ -175,13 +222,22 @@ const ThreadCard = ({
             {community && ` - ${community.name} Community`}
           </p>
 
-          <Image
-            src={community.avatar}
-            alt={community.name}
-            width={14}
-            height={14}
-            className="ml-1 rounded-full object-cover"
-          />
+          <div className="relative ml-1 h-4 w-4">
+            {communityAvatarUrl ? (
+              <Image
+                src={communityAvatarUrl}
+                alt={community.name}
+                fill
+                className="rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-full w-full rounded-full bg-gray-500 flex items-center justify-center">
+                <span className="text-[8px] text-light-1">
+                  {getInitials(community.name)}
+                </span>
+              </div>
+            )}
+          </div>
         </Link>
       )}
     </article>
