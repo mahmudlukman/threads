@@ -51,8 +51,8 @@ const Home = () => {
                 currentUserId={user?._id}
                 parentId={thread.parentId ?? null}
                 content={thread.text}
-                image={thread.image}
-                author={{ ...thread.author, id: thread.author._id }}
+                image={thread.image ?? undefined}
+                author={thread.author}
                 community={thread.community ? { id: thread.community._id, name: thread.community.name, avatar: thread.community.avatar } : null}
                 createdAt={thread.createdAt}
                 comments={thread.children}

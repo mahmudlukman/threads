@@ -14,9 +14,9 @@ interface Props {
     url: string;
   };
   author: {
+    _id: string;
     name: string;
     avatar: string | { url: string };
-    id: string;
   };
   community: {
     id: string;
@@ -74,7 +74,7 @@ const ThreadCard = ({
       <div className="flex items-start justify-between">
         <div className="flex w-full flex-1 flex-row gap-4">
           <div className="flex flex-col items-center">
-            <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
+            <Link href={`/profile/${author._id}`} className="relative h-11 w-11">
               {authorAvatarUrl ? (
                 <Image
                   src={authorAvatarUrl}
@@ -95,7 +95,7 @@ const ThreadCard = ({
           </div>
 
           <div className="flex w-full flex-col">
-            <Link href={`/profile/${author.id}`} className="w-fit">
+            <Link href={`/profile/${author._id}`} className="w-fit">
               <h4 className="cursor-pointer text-base-semibold text-light-1">
                 {author.name}
               </h4>
@@ -168,7 +168,7 @@ const ThreadCard = ({
         <DeleteThread
           threadId={JSON.stringify(id)}
           currentUserId={currentUserId}
-          authorId={author.id}
+          authorId={author._id}
           parentId={parentId}
           isComment={isComment}
         />
