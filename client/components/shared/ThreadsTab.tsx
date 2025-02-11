@@ -32,8 +32,6 @@ const ThreadsTab = ({ currentUserId, accountId, accountType }: Props) => {
     { skip: accountType !== "Community" }
   );
 
-  console.log(userThreadsData);
-
   // Determine the result based on account type
   const result = accountType === "User" ? userThreadsData : communityPostsData;
 

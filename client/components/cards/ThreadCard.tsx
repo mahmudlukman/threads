@@ -96,7 +96,7 @@ const ThreadCard = ({
 
           <div className="flex w-full flex-col">
             <Link href={`/profile/${author._id}`} className="w-fit">
-              <h4 className="cursor-pointer text-base-semibold text-light-1">
+              <h4 className="cursor-pointer text-base-semibold text-light-2">
                 {author.name}
               </h4>
             </Link>
@@ -112,7 +112,7 @@ const ThreadCard = ({
                       src={image.url}
                       alt="Thread image"
                       fill
-                      className="object-contain absolute top-0 left-0"
+                      className="absolute top-0 left-0"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
