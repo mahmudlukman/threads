@@ -47,7 +47,7 @@ const UserCard = ({ id, name, username, avatar, personType }: Props) => {
           {avatarUrl ? (
             <Image
               src={avatarUrl}
-              alt="user_logo"
+              alt="user_avatar"
               fill
               className="rounded-full object-cover"
             />

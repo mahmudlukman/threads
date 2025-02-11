@@ -17,6 +17,7 @@ interface Props {
     _id: string;
     name: string;
     avatar: string | { url: string };
+    username: string;
   };
   community: {
     id: string;
@@ -99,6 +100,7 @@ const ThreadCard = ({
               <h4 className="cursor-pointer text-base-semibold text-light-2">
                 {author.name}
               </h4>
+              <p className="text-small-medium text-gray-1">@{author.username}</p>
             </Link>
 
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
@@ -112,7 +114,7 @@ const ThreadCard = ({
                       src={image.url}
                       alt="Thread image"
                       fill
-                      className="absolute top-0 left-0"
+                      className="object-fill absolute top-0 left-0"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>

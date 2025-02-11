@@ -7,7 +7,7 @@ import Pagination from "@/components/shared/Pagination";
 import { useSelector } from "react-redux";
 import { IThread, RootState } from "@/types";
 
-const THREADS_PER_PAGE = 6; // Match the default limit from your API
+const THREADS_PER_PAGE = 6; 
 
 const Home = () => {
   const { user } = useSelector((state: RootState) => state.auth);

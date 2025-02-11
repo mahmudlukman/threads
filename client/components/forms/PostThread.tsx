@@ -59,23 +59,21 @@ const PostThread = ({ communityId }: Props) => {
   const handleRemoveImage = () => {
     form.setValue("image", "");
     setImagePreview(null);
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     if (fileInput) {
-      fileInput.value = '';
+      fileInput.value = "";
     }
   };
 
   const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
     try {
-      console.log("Submitting values:", values); // Debug log
-      
-      const response = await createThread({
-        text: values.text, // Changed from thread to text
+      await createThread({
+        text: values.text, 
         image: values.image,
         communityId,
       }).unwrap();
-      
-      console.log("Response:", response); // Debug log
 
       router.push("/");
       form.reset();
@@ -93,7 +91,7 @@ const PostThread = ({ communityId }: Props) => {
       >
         <FormField
           control={form.control}
-          name="text" // Changed from thread to text
+          name="text"
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-3">
               <FormLabel className="text-base-semibold text-light-2">
@@ -110,10 +108,10 @@ const PostThread = ({ communityId }: Props) => {
         <FormField
           control={form.control}
           name="image"
-          render={({ field }) => (
+          render={() => (
             <FormItem className="flex w-full flex-col gap-3">
               <div className="flex items-center gap-4">
-                <FormControl className="w-40">
+                <FormControl className="w-60">
                   <Input
                     type="file"
                     accept="image/*"
