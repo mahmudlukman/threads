@@ -45,8 +45,7 @@ const ThreadCard = ({
   comments,
   isComment,
 }: Props) => {
-  // Helper function to get initials
-  console.log('Thread Image Data:', image);
+  // Helper function to get initials from a name
   const getInitials = (name: string) => {
     return name
       .split(" ")

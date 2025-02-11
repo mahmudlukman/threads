@@ -1,14 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useSelector } from "react-redux";
-import { RootState } from "@/types";
 
 interface Props {
-  name: string;
-  username: string;
-  avatar: string;
-  bio: string;
-  type?: string;
+  accountId: string;
+  authUserId: string;
+  name: string | undefined;
+  username: string | undefined;
+  avatar?: string;
+  bio: string | undefined;
+  type: "User" | "Community";
 }
 
 // Function to get initials from name
@@ -20,9 +20,15 @@ const getInitials = (name: string) => {
     .toUpperCase()
     .slice(0, 2);
 };
-
-const ProfileHeader = ({ name, username, avatar, bio, type }: Props) => {
-  const { user } = useSelector((state: RootState) => state.auth);
+const ProfileHeader = ({
+  accountId,
+  authUserId,
+  name = '', 
+  username = '', 
+  avatar,
+  bio = '',
+  type
+}: Props) => {
   return (
     <div className="flex w-full flex-col justify-start">
       <div className="flex items-center justify-between">
@@ -51,7 +57,7 @@ const ProfileHeader = ({ name, username, avatar, bio, type }: Props) => {
             <p className="text-base-medium text-gray-1">@{username}</p>
           </div>
         </div>
-        {user?._id && type !== "Community" && (
+        {accountId === authUserId && type !== "Community" && (
           <Link href="/profile/edit">
             <div className="flex cursor-pointer gap-3 rounded-lg bg-dark-3 px-4 py-2">
               <Image

@@ -89,7 +89,7 @@ export const getCommunityDetails = catchAsyncError(
         {
           path: "members",
           model: User,
-          select: "name username image _id id",
+          select: "name username avatar _id id",
         },
       ]);
 
@@ -115,7 +115,7 @@ export const getCommunityPosts = catchAsyncError(
           {
             path: "author",
             model: User,
-            select: "name image id", // Select the "name" and "_id" fields from the "User" model
+            select: "name avatar id", // Select the "name" and "_id" fields from the "User" model
           },
           {
             path: "children",
@@ -123,7 +123,7 @@ export const getCommunityPosts = catchAsyncError(
             populate: {
               path: "author",
               model: User,
-              select: "image _id", // Select the "name" and "_id" fields from the "User" model
+              select: "avatar _id", // Select the "name" and "_id" fields from the "User" model
             },
           },
         ],
@@ -207,7 +207,10 @@ export const addMemberToCommunity = catchAsyncError(
       }
 
       // Find the community by its unique id
-      const community = await Community.findById(communityId).populate("createdBy", "name _id");
+      const community = await Community.findById(communityId).populate(
+        "createdBy",
+        "name _id"
+      );
       if (!community) {
         return next(new ErrorHandler("Community not found", 404));
       }
@@ -252,7 +255,7 @@ export const addMemberToCommunity = catchAsyncError(
         userId: community.createdBy._id.toString(),
         title: "New Community Member",
         message: `${user.name} has joined your community "${community.name}"`,
-        type: "follow"
+        type: "follow",
       });
 
       // Fetch updated community to return in response
@@ -350,7 +353,7 @@ export const removeMemberFromCommunity = catchAsyncError(
 export const updateCommunity = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, username, bio, image } = req.body;
+      const { name, username, bio, avatar } = req.body;
       const { communityId } = req.params;
       const userId = req.user?._id;
 
@@ -378,15 +381,15 @@ export const updateCommunity = catchAsyncError(
       if (username) community.username = username;
       if (bio) community.bio = bio;
 
-      if (image && image !== community.image?.url) {
-        if (community.image?.public_id) {
-          await cloudinary.v2.uploader.destroy(community.image.public_id);
+      if (avatar && avatar !== community.avatar?.url) {
+        if (community.avatar?.public_id) {
+          await cloudinary.v2.uploader.destroy(community.avatar.public_id);
         }
-        const myCloud = await cloudinary.v2.uploader.upload(image, {
+        const myCloud = await cloudinary.v2.uploader.upload(avatar, {
           folder: "community",
           width: 150,
         });
-        community.image = {
+        community.avatar = {
           public_id: myCloud.public_id,
           url: myCloud.secure_url,
         };
@@ -443,8 +446,8 @@ export const deleteCommunity = catchAsyncError(
       }
 
       // Delete community image from cloudinary if it exists
-      if (community.image?.public_id) {
-        await cloudinary.v2.uploader.destroy(community.image.public_id);
+      if (community.avatar?.public_id) {
+        await cloudinary.v2.uploader.destroy(community.avatar.public_id);
       }
 
       // Delete all threads associated with the community

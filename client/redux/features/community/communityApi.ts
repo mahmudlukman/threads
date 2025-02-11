@@ -13,7 +13,7 @@ export const communityApi = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: "Community", id: "LIST" }],
     }),
     getCommunityDetails: builder.query({
-      query: ({ id }) => ({
+      query: ({id}) => ({
         url: `community/${id}`,
         method: "GET",
         credentials: "include" as const,

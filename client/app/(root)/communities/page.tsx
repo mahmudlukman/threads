@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { redirect, useSearchParams } from "next/navigation";
 import Searchbar from "@/components/shared/Searchbar";

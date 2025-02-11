@@ -101,6 +101,7 @@ export interface IThread {
   author: {
     _id: string;
     name: string;
+    username: string;
     avatar: string;
   };
   community?: {
