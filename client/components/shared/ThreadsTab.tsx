@@ -51,7 +51,7 @@ const ThreadsTab = ({ currentUserId, accountId, accountType }: Props) => {
   }
 
   // Determine threads and account info
-  const threads = result.threads || [];
+  const threads = Array.isArray(result.threads) ? result.threads : [];
   const accountInfo =
     accountType === "User"
       ? {
