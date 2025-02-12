@@ -40,10 +40,10 @@ const Page = ({ params }: PageProps) => {
   if (!communityDetails) return null;
 
   // Ensure threads and members are arrays, even if null/undefined
-  //   const threads = communityDetails.threads || [];
-  //   const members = communityDetails.members || [];
+    const threads = data.communityDetails.threads || [];
+    const members = data.communityDetails.members || [];
 
-  //   console.log(communityDetails.name);
+    console.log(data);
 
   return (
     <section>
@@ -73,7 +73,7 @@ const Page = ({ params }: PageProps) => {
 
                 {tab.label === "Threads" && (
                   <p className="ml-1 rounded-sm bg-light-4 px-2 py-1 !text-tiny-medium text-light-2">
-                    {data?.threads && data.threads.length}
+                    {threads && threads.length}
                   </p>
                 )}
               </TabsTrigger>
@@ -90,8 +90,8 @@ const Page = ({ params }: PageProps) => {
 
           <TabsContent value="members" className="mt-9 w-full text-light-1">
             <section className="mt-9 flex flex-col gap-10">
-              {data?.members && data?.members.length > 0 ? (
-                data.members.map((member: any) => (
+              {members && members.length > 0 ? (
+                members.map((member: any) => (
                   <UserCard
                     key={member._id}
                     id={member._id}
